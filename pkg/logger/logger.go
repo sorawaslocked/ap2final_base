@@ -44,3 +44,7 @@ func setupPrettyLogger() *slog.Logger {
 
 	return slog.New(handler)
 }
+
+func Err(err error) slog.Attr {
+	return slog.String("error", err.Error())
+}
