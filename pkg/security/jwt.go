@@ -7,8 +7,8 @@ import (
 
 type JWTProvider struct {
 	secretKey       string
-	accessTokenTTL  time.Duration
-	refreshTokenTTL time.Duration
+	AccessTokenTTL  time.Duration
+	RefreshTokenTTL time.Duration
 }
 
 type Claims struct {
@@ -16,11 +16,14 @@ type Claims struct {
 	Role   *string
 }
 
-func NewJWTProvider(secretKey string, accessTokenTTL, refreshTokenTTL time.Duration) *JWTProvider {
+func NewJWTProvider(
+	secretKey string,
+	accessTokenTTL, refreshTokenTTL time.Duration,
+) *JWTProvider {
 	return &JWTProvider{
 		secretKey:       secretKey,
-		accessTokenTTL:  accessTokenTTL,
-		refreshTokenTTL: refreshTokenTTL,
+		AccessTokenTTL:  accessTokenTTL,
+		RefreshTokenTTL: refreshTokenTTL,
 	}
 }
 
@@ -28,7 +31,7 @@ func (p *JWTProvider) GenerateAccessToken(userID string, role string) (string, e
 	claims := jwt.MapClaims{
 		"user_id": userID,
 		"role":    role,
-		"exp":     time.Now().Add(p.accessTokenTTL).Unix(),
+		"exp":     time.Now().Add(p.AccessTokenTTL).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -39,7 +42,7 @@ func (p *JWTProvider) GenerateAccessToken(userID string, role string) (string, e
 func (p *JWTProvider) GenerateRefreshToken(userID string) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id": userID,
-		"exp":     time.Now().Add(p.refreshTokenTTL).Unix(),
+		"exp":     time.Now().Add(p.RefreshTokenTTL).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
