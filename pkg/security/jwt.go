@@ -1,7 +1,10 @@
 package security
 
 import (
+	"context"
 	"github.com/golang-jwt/jwt/v5"
+	"google.golang.org/grpc/metadata"
+	"strings"
 	"time"
 )
 
@@ -73,4 +76,20 @@ func (p *JWTProvider) VerifyAndParseClaims(tokenStr string) (Claims, error) {
 	}
 
 	return claims, nil
+}
+
+func TokenFromCtx(ctx context.Context) (string, bool) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return "", false
+	}
+
+	authHeader := md["authorization"]
+	if len(authHeader) == 0 {
+		return "", false
+	}
+
+	tokenStr := strings.TrimPrefix(authHeader[0], "Bearer ")
+
+	return tokenStr, true
 }
